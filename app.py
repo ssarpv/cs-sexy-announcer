@@ -22,10 +22,6 @@ def write_cfg():
                 cfgPath = os.path.join(csPath, 'csgo', 'cfg', 'gamestate_integration_announcer.cfg')
                 if not os.path.exists(cfgPath):
                     shutil.copyfile('config.cfg', cfgPath)
-                    print('WE HAVE CSGO IN')
-                    print(csPath)
-                    print('Config in')
-                    print(cfgPath)
 
 
 def play_sound(file):
@@ -35,9 +31,10 @@ def play_sound(file):
 @app.route('/gsi', methods=['POST'])
 def incoming_data():
     data = request.json
-    print(data)
     if 'previously' in data:
         if 'player' in data['previously']:
+            if 'name' in data['previously']['player']:
+                return 'OK', 200
             if 'state' in data['previously']['player']:
                 if 'round_kills' in data['previously']['player']['state']:
                     if data['player']['state']['round_kills'] == 1:
@@ -69,14 +66,11 @@ def run_server():
 
 def main():
     image = Image.open('2x.ico')
-    print(image)
     menu = (
         pystray.MenuItem('Exit', exit_action),
     )
-    print(menu)
 
     icon = pystray.Icon('name', image, 'buh', menu)
-    print(icon)
     icon.run_detached()
     server_thread = threading.Thread(target=run_server)
     server_thread.start()
